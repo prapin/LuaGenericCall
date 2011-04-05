@@ -51,7 +51,7 @@ General form
 Each of these functions has a variable number of arguments, and three fixed ones.
 
 1. __lua_State* L__: a pointer to an instance of a Lua state. If the pointer is `NULL`, the function automatically calls `lua_newstate` to create a new instance, and will also call `lua_close` to release its memory, unless the pointer to the instance is retrieved with __%S__ option (see after). If the state is freed and an error occurred before, the function allocates a buffer to copy the error message, which must be closed with `free`.
-2. __script string__: it contains some piece of Lua code to execute. It typically begins with parameter retrieval: {{local var1, var2, var3 = ...;}} and ends with returning results: {{return res1, res2, res2}}. If the pointer is `NULL`, it is equivalent to the empty script "".
+2. __script string__: it contains some piece of Lua code to execute. It typically begins with parameter retrieval: `local var1, var2, var3 = ...;` and ends with returning results: `return res1, res2, res2`. If the pointer is `NULL`, it is equivalent to the empty script "".
 3. __format string__: a string similar to the `printf` or `scanf` format strings, using the __%__ character to describe the variable types of input and output values. If the pointer is `NULL`, it is equivalent to the empty format "".
 4. __zero or more value parameters.__ Input parameters are passed by value, while output results must be retrieved by passing addresses of variables. Allocation options may also change the expected types of variables.
 
@@ -185,16 +185,16 @@ Lua Generic call library has been placed under the same MIT license as Lua itsel
 Source files
 ------------
 
-The library distribution consists in just one C implementation file {{lgencall.c}} and one header file {{lgencall.h}}. There is also a testing file {{testwin.cpp}}, which includes all test examples of the next chapter, including Windows header file {{tchar.h}}.  Using this utility header, it is possible to write code that compile for both ANSI and Unicode platforms. 
+The library distribution consists in just one C implementation file `lgencall.c` and one header file `lgencall.h`. There is also a testing file `testwin.cpp`, which includes all test examples of the next chapter, including Windows header file `tchar.h`.  Using this utility header, it is possible to write code that compile for both ANSI and Unicode platforms. 
 
-The main C file includes ANSI standard files, and the public Lua API header files. Like other standard Lua libraries, no private feature is used, and the file can be compiled in both C and C++ languages. However, it requires the new C99 include file {{stdint.h}} to define fixed size integers. If your compiler does not support this, there are several free versions available on the WWW. [http://www.azillionmonkeys.com/qed/pstdint.h] [http://msinttypes.googlecode.com/svn/trunk/stdint.h]
+The main C file includes ANSI standard files, and the public Lua API header files. Like other standard Lua libraries, no private feature is used, and the file can be compiled in both C and C++ languages. However, it requires the new C99 include file `stdint.h` to define fixed size integers. If your compiler does not support this, there are several free versions available on the WWW. [http://www.azillionmonkeys.com/qed/pstdint.h] [http://msinttypes.googlecode.com/svn/trunk/stdint.h]
 
 The source file can either be compiled together with the application, or placed inside Lua shared library if you can afford to recompile it.
 
 Compilation switches
 --------------------
 
-In header file {{lgencall.h}} are defined 3 compilation macros which are used to customize the library for your platform. Each parameter can either be changed in the file itself, or specified on the compiler's command line. A small explanation for it is present in the header file, listing the possible values. Also, the compilation is affected by the following standard macros: `__cplusplus`, `INT_MAX`, `UINT_MAX` and `__`STDC_VERSION`__`.
+In header file `lgencall.h` are defined 3 compilation macros which are used to customize the library for your platform. Each parameter can either be changed in the file itself, or specified on the compiler's command line. A small explanation for it is present in the header file, listing the possible values. Also, the compilation is affected by the following standard macros: `__cplusplus`, `INT_MAX`, `UINT_MAX` and `__`STDC_VERSION`__`.
 
 Examples
 ========
@@ -203,7 +203,7 @@ Directive elements
 -------------------
 
 For sure, examples will help you to understand the different features. The first examples show the usage of various directive formats.
-Let us begin with the simplest one, a {{"Hello World"}} program of course:
+Let us begin with the simplest one, a `"Hello World"` program of course:
 
 	lua_genpcall(NULL, "print 'Hello World!'", "%O<");
 
@@ -311,14 +311,14 @@ The code chunk prints the parameter index, the length of the array and a list wi
 	unsigned char data[] = { 200, 100, 0, 3, 5, 0 };
 	lua_genpcall(L, "for k,v in pairs{...} do print(k, v:gsub('.', "
 	  "function(c) return '\\\\'.. c:byte() end)) end", 
-	  "%s %6s %*s %ls", "Hello", "P1\0P2", sizeof(data), data, L"été"); 
+	  "%s %6s %*s %ls", "Hello", "P1\0P2", sizeof(data), data, L"Ã©tÃ©"); 
 	-->
 	1       \72\101\108\108\111     5
 	2       \80\49\0\80\50\0        6
 	3       \200\100\0\3\5\0        6
 	4       \195\169\116\195\169    5 
 
-Strings are not necessarily zero terminated arrays of __`char`__. Here the script chunk prints the argument index, then the string in which each byte is replaced by a backslash and its decimal value. Note that the backslash has to be escaped _twice_: first for C (the chunk passed to Lua is {{... return '\\' ...}}), and second for Lua. The first argument is a zero terminated string; the second is a string containing a binary 0, specified by its length. The third argument is a binary array of data, for which the length is passed by argument. And the last argument is a wide character string, which is converted to a UTF-8 string or another form of multi-byte string, depending on how the module was compiled.
+Strings are not necessarily zero terminated arrays of __`char`__. Here the script chunk prints the argument index, then the string in which each byte is replaced by a backslash and its decimal value. Note that the backslash has to be escaped _twice_: first for C (the chunk passed to Lua is `... return '\\' ...`), and second for Lua. The first argument is a zero terminated string; the second is a string containing a binary 0, specified by its length. The third argument is a binary array of data, for which the length is passed by argument. And the last argument is a wide character string, which is converted to a UTF-8 string or another form of multi-byte string, depending on how the module was compiled.
 
 ### 6. String lists
 
@@ -362,7 +362,7 @@ This sample retrieves 5 numerical values of different types and sizes. The secon
 	-->
 	1 0 Hello 00975598
 
-In this example the first two parameters retrieved are two Boolean values, of C different types. The third return value is discarded because of the __%n__ format. A {{'Hello'}} string is received through Lua stack with __%+s__ idiom. And the last result value, a userdatum value, is got by address into a generic pointer.
+In this example the first two parameters retrieved are two Boolean values, of C different types. The third return value is discarded because of the __%n__ format. A `'Hello'` string is received through Lua stack with __%+s__ idiom. And the last result value, a userdatum value, is got by address into a generic pointer.
 
 ### 3. C functions and call-backs
 
@@ -378,7 +378,7 @@ In this example the first two parameters retrieved are two Boolean values, of C 
 	lua_pushstring(L, msg);
 	fct(L);
 
-This sample is a complicated way to implement the {{Hello World}} program. The first return value is a pointer to a Lua registered C function, the global `print` function. The second value, a simple string, is retrieved through a callback function, which receives as its `ptr` argument the address of variable `msg`. Then we can print the message by pushing the message onto Lua stack and call the `print` function directly by C (which is certainly not a good practice in normal situations). 
+This sample is a complicated way to implement the `Hello World` program. The first return value is a pointer to a Lua registered C function, the global `print` function. The second value, a simple string, is retrieved through a callback function, which receives as its `ptr` argument the address of variable `msg`. Then we can print the message by pushing the message onto Lua stack and call the `print` function directly by C (which is certainly not a good practice in normal situations). 
 
 ### 4. Numerical arrays
 
@@ -443,7 +443,7 @@ This sample retrieves five strings in different ways. The first string is taken 
 	  }
 	  printf("}\n");
 	}
-	…
+	â€¦
 	const char *str1;
 	char *str2;
 	char str3[10];
