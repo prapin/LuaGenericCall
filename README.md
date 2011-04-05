@@ -4,6 +4,7 @@ Lua Generic Call
 Introduction
 ------------
 
+
 Using standard Lua API, calling a chunk function while passing input parameters and retrieving output results requires a lot of code and complete knowledge about Lua stack.
 As an example, here is how to ask Lua to perform the multiplication of 3 by 2.5, checking for possible syntax and runtime errors:
 
